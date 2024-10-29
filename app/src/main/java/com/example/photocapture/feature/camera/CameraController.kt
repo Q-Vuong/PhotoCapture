@@ -2,6 +2,7 @@ package com.example.photocapture.feature.camera
 
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -36,6 +37,11 @@ class CameraController (private val context: Context, private val model: Camera)
         }, ContextCompat.getMainExecutor(context))
     }
 
+    fun release() {
+        imageCapture = null // Giải phóng imageCapture
+        // Nếu cần thêm logic để giải phóng camera, bạn có thể thêm ở đây
+    }
+
     fun switchCamera(previewView: PreviewView) {
         cameraSelector = if(cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
         {
@@ -68,9 +74,21 @@ class CameraController (private val context: Context, private val model: Camera)
     }
 
     private fun createFile(): File {
-        val outputDir = context.cacheDir
+        // Sử dụng getExternalFilesDir với DIRECTORY_PICTURES để lưu vào thư mục Pictures riêng của ứng dụng
+        val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        if (outputDir != null && !outputDir.exists()) {
+            outputDir.mkdirs()  // Tạo thư mục nếu chưa tồn tại
+        }
+        // Tạo tên file với định dạng thời gian
         val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
             .format(System.currentTimeMillis()) + ".jpg"
-        return File(outputDir, fileName)
+        return File(outputDir, fileName)  // Trả về file mới
+    }
+
+
+    fun getSavedImages(): List<Uri> {
+        // Sử dụng getExternalFilesDir với DIRECTORY_PICTURES để lấy thư mục Pictures riêng của ứng dụng
+        val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return outputDir?.listFiles()?.map { Uri.fromFile(it) } ?: emptyList()
     }
 }
