@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,11 +54,11 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
     val initialIndex = imageUriList.indexOf(imageUri).coerceAtLeast(0)
     val pagerState = rememberPagerState(initialPage = initialIndex) { imageUriList.size }
     val uriRemoveImage = remember { mutableStateOf(imageUri) }
-    val selectedImageIndex = remember { mutableStateOf(initialIndex) }
+    val selectedImageIndex = remember { mutableIntStateOf(initialIndex) }
 
-    LaunchedEffect(pagerState.currentPage, selectedImageIndex.value) {
+    LaunchedEffect(pagerState.currentPage, selectedImageIndex.intValue) {
         uriRemoveImage.value = imageUriList.getOrNull(pagerState.currentPage) ?: Uri.EMPTY
-        pagerState.scrollToPage(selectedImageIndex.value)
+        pagerState.scrollToPage(selectedImageIndex.intValue)
     }
 
     Scaffold { innerPadding ->
@@ -124,7 +125,7 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
                             .padding(1.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
-                                selectedImageIndex.value = imageUriList.indexOf(uri)
+                                selectedImageIndex.intValue = imageUriList.indexOf(uri)
                                 uriRemoveImage.value = uri
                                 Log.d("GalleryController", "Uri: ${uriRemoveImage.value}")
                             },
