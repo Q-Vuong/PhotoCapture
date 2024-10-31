@@ -1,16 +1,20 @@
 [versions]
 agp = "8.7.1"
 kotlin = "2.0.0"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.10.00"
-camerax = "1.3.4"
+composeBom = "2024.10.01"
+camerax = "1.4.0"
 nav = "2.8.3"
 coil = "2.0.0"
+benchmarkMacro = "1.3.3"
+compose = "1.7.5"
+foundation = "1.7.5"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,14 +31,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "nav" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+androidx-benchmark-macro = { group = "androidx.benchmark", name = "benchmark-macro", version.ref = "benchmarkMacro" }
+material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
+foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

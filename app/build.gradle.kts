@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.benchmark.macro)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,4 +69,9 @@ dependencies {
 
     // Navigation for Jetpack Compose
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.material.icons.extended)
+    implementation(libs.foundation)
+    implementation(libs.gson)
+
 }
