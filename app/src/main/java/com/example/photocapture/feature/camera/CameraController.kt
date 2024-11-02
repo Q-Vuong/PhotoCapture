@@ -32,7 +32,7 @@ class CameraController (private val context: Context) {
             cameraProviderFuture.addListener({
                 cameraProvider = cameraProviderFuture.get()
                 preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+                    it.surfaceProvider = previewView.surfaceProvider
                 }
 
                 imageCapture = ImageCapture.Builder().build()
@@ -69,7 +69,18 @@ class CameraController (private val context: Context) {
         startCamera(previewView)
     }
 
-    fun capturePhoto() {
+    private fun createFile(): File? {
+        val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        outputDir?.let {
+            if (!it.exists()) it.mkdirs()
+            val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
+                .format(System.currentTimeMillis()) + ".jpg"
+            return File(it, fileName)
+        }
+        return null
+    }
+
+    fun capturePhoto(onImageSaved: (Uri) -> Unit) {
         val photoFile = createFile() ?: return
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
@@ -86,6 +97,7 @@ class CameraController (private val context: Context) {
                     )
                     photosList.add(photo)
                     savePhotosListToStorage()
+                    onImageSaved(savedUri)
                 }
                 override fun onError(exception: ImageCaptureException) {
                     exception.printStackTrace()
@@ -110,33 +122,6 @@ class CameraController (private val context: Context) {
     }
 
 
-    private fun createFile(): File? {
-        val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        outputDir?.let {
-            if (!it.exists()) it.mkdirs()
-            val fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
-                .format(System.currentTimeMillis()) + ".jpg"
-            return File(it, fileName)
-        }
-        return null
-    }
-
-
-    fun getLastImageUri(): Uri? {
-        val photosFromStorage = readPhotosListFromStorage()
-        return if (photosFromStorage.isNotEmpty()) {
-            // Lấy URI của ảnh cuối cùng và ghi log
-            val lastImageUri = Uri.parse(photosFromStorage.last().imageUri) // Chuyển đổi String thành Uri
-            Log.d("CameraController", "Last Image: $lastImageUri")
-            lastImageUri
-        } else {
-            // Ghi log khi không có ảnh nào
-            Log.d("CameraController", "No images captured yet.")
-            null
-        }
-    }
-
-
     private fun readPhotosListFromStorage(): List<Photo> {
         val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         val file = File(outputDir, "photos_list.json")
@@ -151,5 +136,17 @@ class CameraController (private val context: Context) {
         }
     }
 
-
+    fun getLastImageUri(): Uri? {
+        val photosFromStorage = readPhotosListFromStorage()
+        return if (photosFromStorage.isNotEmpty()) {
+            // Lấy URI của ảnh cuối cùng và ghi log
+            val lastImageUri = Uri.parse(photosFromStorage.last().imageUri) // Chuyển đổi String thành Uri
+            Log.d("CameraController", "Last Image: $lastImageUri")
+            lastImageUri
+        } else {
+            // Ghi log khi không có ảnh nào
+            Log.d("CameraController", "No images captured yet.")
+            null
+        }
+    }
 }

@@ -25,6 +25,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.photocapture.feature.gallery.GalleryController
 import com.example.photocapture.feature.gallery.GalleryView
 import com.example.photocapture.feature.gallery.ImageDetailView
+import com.example.photocapture.feature.photoedit.EditController
+import com.example.photocapture.feature.photoedit.EditPhotoView
 import com.example.photocapture.ui.theme.PhotoCaptureTheme
 
 class MainActivity : ComponentActivity() {
@@ -86,6 +88,11 @@ fun MyNavigation() {
             SetupImageDetailView(Uri.parse(uriString), navController)
         }
 
+        composable("editPhoto/{imageUri}") { backStackEntry ->
+            val uriString = backStackEntry.arguments?.getString("imageUri") ?: ""
+            SetupEditPhotoView(Uri.parse(uriString), navController)
+        }
+
     }
 }
 
@@ -101,7 +108,7 @@ fun SetupCameraView(navController: NavController) {
 fun SetupGalleryView(navController: NavController) {
     val context = LocalContext.current
     val galleryController = remember { GalleryController(context) }
-    val imageUris = remember { galleryController.getSavedImages() }
+    val imageUris = remember { galleryController.getListPhotos() }
 
     GalleryView(imageUris, navController)
 }
@@ -110,9 +117,17 @@ fun SetupGalleryView(navController: NavController) {
 fun SetupImageDetailView(uri: Uri, navController: NavController) {
     val context = LocalContext.current
     val galleryController = remember { GalleryController(context) }
-    val imageUris = remember { galleryController.getSavedImages() }
+    val imageUris = remember { galleryController.getListPhotos() }
 
     ImageDetailView(uri, galleryController, imageUris, navController)
+}
+
+@Composable
+fun SetupEditPhotoView(uri: Uri, navController: NavController) {
+    val context = LocalContext.current
+    val editController = remember { EditController(context) }
+
+    EditPhotoView(uri, editController, navController)
 }
 
 @Preview(showBackground = true)

@@ -1,5 +1,6 @@
 package com.example.photocapture.feature.camera
 
+import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
 import androidx.camera.view.PreviewView
@@ -23,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,13 +49,16 @@ import com.example.photocapture.R
 fun CameraView(controller: CameraController, navController: NavController) {
     var isCameraAvailable by remember { mutableStateOf(true) }
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
-    var lastImageUri by remember { mutableStateOf(controller.getLastImageUri()) }
+    var lastImageUri by remember { mutableStateOf<Uri?>(null) }
 
     // Dừng camera khi view không còn hiện
     DisposableEffect(Unit) {
         onDispose {
             controller.stopCamera()
         }
+    }
+    LaunchedEffect(Unit) {
+        lastImageUri = controller.getLastImageUri()
     }
 
 
@@ -140,7 +145,7 @@ fun CameraView(controller: CameraController, navController: NavController) {
 
                 Box(
                     modifier = Modifier
-                        .size(74.dp),
+                        .size(84.dp),
                     contentAlignment = Alignment.Center
 
                 ) {
@@ -152,10 +157,11 @@ fun CameraView(controller: CameraController, navController: NavController) {
                     )
                     Button(
                         onClick = {
-                            controller.capturePhoto()
-                            lastImageUri = controller.getLastImageUri()},
+                            controller.capturePhoto { savedUri ->
+                                lastImageUri = savedUri
+                            }},
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(70.dp)
                             .clip(CircleShape)
                             .align(Alignment.Center),
                         colors = ButtonDefaults.buttonColors(
@@ -189,7 +195,7 @@ fun CameraView(controller: CameraController, navController: NavController) {
                     Image(
                         painter = painterResource(R.drawable.icon_camera_switch),
                         contentDescription = null,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(25.dp)
                     )
                 }
 

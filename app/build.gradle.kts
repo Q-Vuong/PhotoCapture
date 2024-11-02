@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.photocapture"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.photocapture"
@@ -73,5 +73,7 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.foundation)
     implementation(libs.gson)
+
+    implementation(libs.exifinterface)
 
 }
