@@ -185,9 +185,10 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
 
                     Log.d("ImageDetailView", "Update list photo")
                     if (imageUriListState.value.isNotEmpty()) {
-                        selectedImageIndex.value =
-                            selectedImageIndex.value.coerceAtMost(imageUriListState.value.lastIndex)
+                        selectedImageIndex.value = selectedImageIndex.value.coerceAtMost(imageUriListState.value.lastIndex)
+                        uriRemoveImage.value = imageUriListState.value[selectedImageIndex.value.coerceAtMost(imageUriListState.value.lastIndex)]
                     } else {
+                        uriRemoveImage.value = Uri.EMPTY
                         navController.popBackStack()
                     }
                 }
