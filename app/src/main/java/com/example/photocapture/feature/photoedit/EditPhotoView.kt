@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.setValue
 
 @Composable
 fun EditPhotoView(photoUri: Uri, controller: EditController, navController: NavController) {
@@ -34,7 +36,7 @@ fun EditPhotoView(photoUri: Uri, controller: EditController, navController: NavC
 
 
     BackHandler {
-        if (controller.history.isNotEmpty()) {
+        if (controller.history.size > 1) {
             isCancelDialogOpen.value = true
         } else {
             navController.popBackStack()

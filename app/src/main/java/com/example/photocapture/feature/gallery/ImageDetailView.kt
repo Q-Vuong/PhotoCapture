@@ -63,17 +63,11 @@ import com.example.photocapture.animations.slideOutFromTop
 import androidx.compose.runtime.getValue
 
 @Composable
-fun ImageDetailView(
-    imageUri: Uri,
-    controller: GalleryController,
-    imageUriList: List<Uri>,
-    navController: NavController
-) {
+fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: List<Uri>, navController: NavController) {
     val imageUriListState = rememberSaveable { mutableStateOf(imageUriList) }
 
     val initialIndex = imageUriListState.value.indexOf(imageUri).coerceAtLeast(0)
-    val pagerState =
-        rememberPagerState(initialPage = initialIndex, pageCount = { imageUriListState.value.size })
+    val pagerState = rememberPagerState(initialPage = initialIndex, pageCount = { imageUriListState.value.size })
 
     val uriRemoveImage = rememberSaveable { mutableStateOf(imageUri) }
     val selectedImageIndex = rememberSaveable { mutableStateOf(initialIndex) }
@@ -91,8 +85,8 @@ fun ImageDetailView(
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        uriRemoveImage.value =
-            imageUriListState.value.getOrNull(pagerState.currentPage) ?: Uri.EMPTY
+        uriRemoveImage.value = imageUriListState.value.getOrNull(pagerState.currentPage) ?: Uri.EMPTY
+        selectedImageIndex.value = pagerState.currentPage
     }
 
     Scaffold { innerPadding ->
@@ -135,7 +129,6 @@ fun ImageDetailView(
                     modifier = Modifier.fillMaxSize(),
                 ) { page ->
                     val imageUri = imageUriListState.value[page]
-                    uriRemoveImage.value = imageUriListState.value[page]
                     Image(
                         painter = rememberAsyncImagePainter(imageUri),
                         contentDescription = null,
