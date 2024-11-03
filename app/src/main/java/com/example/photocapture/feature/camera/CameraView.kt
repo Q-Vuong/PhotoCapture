@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,19 +42,33 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.photocapture.R
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraView(controller: CameraController, navController: NavController) {
     var isCameraAvailable by remember { mutableStateOf(true) }
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
     var lastImageUri by remember { mutableStateOf<Uri?>(null) }
+    val systemUiController = rememberSystemUiController()
 
     // Dừng camera khi view không còn hiện
     DisposableEffect(Unit) {
+        systemUiController.setStatusBarColor(
+            color = Color.Black,
+            darkIcons = true
+        )
+        systemUiController.setNavigationBarColor(
+            color = Color.Black,
+            darkIcons = false
+        )
+
         onDispose {
             controller.stopCamera()
+            systemUiController.setStatusBarColor(Color.Unspecified)
+            systemUiController.setNavigationBarColor(Color.Unspecified)
+            systemUiController.systemBarsDarkContentEnabled = true
         }
+
     }
     LaunchedEffect(Unit) {
         lastImageUri = controller.getLastPhotoUri()
