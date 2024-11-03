@@ -25,15 +25,15 @@ class EditController(private val context: Context) {
             context.contentResolver.openInputStream(uri)?.use { decodeStream ->
                 val bitmap = BitmapFactory.decodeStream(decodeStream)
                 val rotatedBitmap = when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
-                    ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
-                    ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                    ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmapIfNeeded(bitmap, 90f)
+                    ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmapIfNeeded(bitmap, 180f)
+                    ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmapIfNeeded(bitmap, 270f)
                     else -> bitmap
                 }
 
                 rotatedBitmap?.let {
                     originalBitmap = it // Lưu bản sao gốc
-                    //saveToHistory(it) // Lưu vào history ko cần nx vì đã có trong rotateBitmap rooif
+                    saveToHistory(it) // Lưu vào history
                 }
 
                 return rotatedBitmap
@@ -44,6 +44,16 @@ class EditController(private val context: Context) {
         return null
     }
 
+
+    // Hàm xoay ảnh nhưng không lưu
+    fun rotateBitmapIfNeeded(source: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(angle) }
+        val updatedBitmap = Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+        return updatedBitmap
+    }
+
+
+    //************************************* Thuộc về Edit Ảnh *************************************************
     // Hàm xoay ảnh
     fun rotateBitmap(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix().apply { postRotate(angle) }

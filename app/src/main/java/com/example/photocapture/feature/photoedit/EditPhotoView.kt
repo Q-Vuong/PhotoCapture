@@ -64,7 +64,7 @@ fun EditPhotoView(photoUri: Uri, controller: EditController, navController: NavC
             ) {
                 Button(
                     onClick = {
-                        if(controller.history.isNotEmpty()) {
+                        if(controller.history.size > 1) {
                             isCancelDialogOpen.value = true
                         } else {
                             navController.popBackStack()
