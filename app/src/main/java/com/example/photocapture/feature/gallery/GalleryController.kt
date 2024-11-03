@@ -10,6 +10,8 @@ import com.google.gson.reflect.TypeToken
 import java.io.File
 
 class GalleryController(private val context: Context) {
+
+    //Đọc danh sách ảnh từ bộ nhớ
     private fun readPhotosListFromStorage(): List<Photo> {
         val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         val file = File(outputDir, "photos_list.json")
@@ -23,6 +25,7 @@ class GalleryController(private val context: Context) {
         }
     }
 
+    // Lấy danh sách ảnh từ bộ nhớ
     fun getListPhotos(): List<Uri> {
         val photosFromStorage = readPhotosListFromStorage()
         Log.d("GalleryController", "List: $photosFromStorage")
@@ -30,7 +33,8 @@ class GalleryController(private val context: Context) {
             .distinct()
     }
 
-    fun deleteImage(uri: Uri): Boolean {
+    // Xoá ảnh khỏi bộ nhớ
+    fun deletePhoto(uri: Uri): Boolean {
         return try {
             val path = uri.path?.replace("file://", "") ?: return false
             val file = File(path)
@@ -53,12 +57,14 @@ class GalleryController(private val context: Context) {
         }
     }
 
+    // Cập nhật danh sách ảnh sau khi xoá
     private fun updatePhotosListAfterDelete(uri: Uri) {
         val existingPhotos = readPhotosListFromStorage().toMutableList()
         existingPhotos.removeIf { it.imageUri == uri.toString() }
         writePhotosListToStorage(existingPhotos)
     }
 
+    // Ghi danh sách ảnh vào bộ nhớ
     private fun writePhotosListToStorage(photos: List<Photo>) {
         val gson = Gson()
         val json = gson.toJson(photos)
@@ -67,6 +73,7 @@ class GalleryController(private val context: Context) {
         file.writeText(json)
     }
 
+    // lấy thông tin ảnh theo uri
     fun getPhotoDetailsByUri(uri: Uri): Photo? {
         val photosFromStorage = readPhotosListFromStorage()
         return photosFromStorage.find { it.imageUri == uri.toString() }

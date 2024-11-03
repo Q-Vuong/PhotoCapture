@@ -58,7 +58,7 @@ fun CameraView(controller: CameraController, navController: NavController) {
         }
     }
     LaunchedEffect(Unit) {
-        lastImageUri = controller.getLastImageUri()
+        lastImageUri = controller.getLastPhotoUri()
     }
 
 

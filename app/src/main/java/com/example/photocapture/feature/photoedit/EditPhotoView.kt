@@ -72,7 +72,7 @@ fun EditPhotoView(photoUri: Uri, controller: EditController, navController: NavC
                         containerColor = MaterialTheme.colorScheme.outline
                     ),
 
-                ) {
+                    ) {
                     Text("Huỷ")
                 }
 
@@ -141,7 +141,7 @@ fun EditPhotoView(photoUri: Uri, controller: EditController, navController: NavC
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(30.dp))
-                    .width(220.dp)
+                    .width(180.dp)
                     .background(MaterialTheme.colorScheme.surfaceDim)
                     .border(0.1.dp, Color.Gray, shape = RoundedCornerShape(30.dp))
                     .padding(vertical = 7.dp)

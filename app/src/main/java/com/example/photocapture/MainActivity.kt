@@ -18,10 +18,13 @@ import android.Manifest
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.photocapture.animations.fadeOutAndZoomOut
+import com.example.photocapture.animations.scaleInAnimation
 import com.example.photocapture.feature.gallery.GalleryController
 import com.example.photocapture.feature.gallery.GalleryView
 import com.example.photocapture.feature.gallery.ImageDetailView
@@ -74,25 +77,50 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MyNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "cameraView") {
-        composable("cameraView") { SetupCameraView(navController)}
-        composable("galleryView") { SetupGalleryView(navController) }
+        composable(
+            route = "cameraView",
+            enterTransition = { scaleInAnimation() } ,
+            popExitTransition = { fadeOutAndZoomOut() },
+            exitTransition = { fadeOutAndZoomOut() },
+            popEnterTransition = { scaleInAnimation() },
+        ) { SetupCameraView(navController) }
 
-        // Thêm màn hình chi tiết ảnh vào đây
-        composable("imageDetail/{imageUri}") { backStackEntry ->
+        composable(
+            route = "galleryView",
+            enterTransition = { scaleInAnimation() } ,
+            popExitTransition = { fadeOutAndZoomOut() },
+            exitTransition = { fadeOutAndZoomOut() },
+            popEnterTransition = { scaleInAnimation() } // animation khi back về lại view này
+
+        ) { SetupGalleryView(navController) }
+
+        composable(
+            route = "imageDetail/{imageUri}",
+            enterTransition = { scaleInAnimation() } ,
+            popExitTransition = { fadeOutAndZoomOut() },
+            exitTransition = { fadeOutAndZoomOut() },
+            popEnterTransition = { scaleInAnimation() }// animation khi back về lại view trước đó
+        ) { backStackEntry ->
             val uriString = backStackEntry.arguments?.getString("imageUri") ?: ""
             SetupImageDetailView(Uri.parse(uriString), navController)
         }
 
-        composable("editPhoto/{imageUri}") { backStackEntry ->
+        composable(
+            route = "editPhoto/{imageUri}",
+            enterTransition = { scaleInAnimation() } ,
+            popExitTransition = { fadeOutAndZoomOut() },
+            exitTransition = { fadeOutAndZoomOut() },
+            popEnterTransition = { scaleInAnimation() }
+        ) { backStackEntry ->
             val uriString = backStackEntry.arguments?.getString("imageUri") ?: ""
             SetupEditPhotoView(Uri.parse(uriString), navController)
         }
-
     }
 }
 

@@ -2,6 +2,9 @@ package com.example.photocapture.feature.gallery
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,13 +58,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.photocapture.animations.slideInFromTop
+import com.example.photocapture.animations.slideOutFromTop
+import androidx.compose.runtime.getValue
 
 @Composable
-fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: List<Uri>, navController: NavController) {
+fun ImageDetailView(
+    imageUri: Uri,
+    controller: GalleryController,
+    imageUriList: List<Uri>,
+    navController: NavController
+) {
     val imageUriListState = rememberSaveable { mutableStateOf(imageUriList) }
 
     val initialIndex = imageUriListState.value.indexOf(imageUri).coerceAtLeast(0)
-    val pagerState = rememberPagerState(initialPage = initialIndex, pageCount = { imageUriListState.value.size })
+    val pagerState =
+        rememberPagerState(initialPage = initialIndex, pageCount = { imageUriListState.value.size })
 
     val uriRemoveImage = rememberSaveable { mutableStateOf(imageUri) }
     val selectedImageIndex = rememberSaveable { mutableStateOf(initialIndex) }
@@ -68,12 +81,18 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
     val showInfo = remember { mutableStateOf(false) }
     var isDeleteDialogOpen = remember { mutableStateOf(false) }
 
+    val animatedScale by animateFloatAsState(
+        targetValue = if (showInfo.value) 0.8f else 1f, // Scale xuống 0.8 khi showInfo.value là true
+        animationSpec = tween(600) // Thời gian animation 300ms
+    )
+
     LaunchedEffect(selectedImageIndex.value) {
         pagerState.scrollToPage(selectedImageIndex.value)
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        uriRemoveImage.value = imageUriListState.value.getOrNull(pagerState.currentPage) ?: Uri.EMPTY
+        uriRemoveImage.value =
+            imageUriListState.value.getOrNull(pagerState.currentPage) ?: Uri.EMPTY
     }
 
     Scaffold { innerPadding ->
@@ -106,6 +125,10 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.6f)
+                    .graphicsLayer {
+                        scaleX = animatedScale
+                        scaleY = animatedScale
+                    }
             ) {
                 HorizontalPager(
                     state = pagerState,
@@ -122,9 +145,10 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
                 }
             }
 
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            if(!showInfo.value) {
+            if (!showInfo.value) {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,20 +180,34 @@ fun ImageDetailView(imageUri: Uri, controller: GalleryController, imageUriList: 
 
             if (uriRemoveImage.value != Uri.EMPTY) {
                 Spacer(modifier = Modifier.height(8.dp))
-                BottomView(controller, uriRemoveImage.value, navController, showInfo, isDeleteDialogOpen) { removedUri ->
+                BottomView(
+                    controller,
+                    uriRemoveImage.value,
+                    navController,
+                    showInfo,
+                    isDeleteDialogOpen
+                ) { removedUri ->
 
                     imageUriListState.value = imageUriListState.value.filter { it != removedUri }
 
                     Log.d("ImageDetailView", "Update list photo")
                     if (imageUriListState.value.isNotEmpty()) {
-                        selectedImageIndex.value = selectedImageIndex.value.coerceAtMost(imageUriListState.value.lastIndex)
+                        selectedImageIndex.value =
+                            selectedImageIndex.value.coerceAtMost(imageUriListState.value.lastIndex)
                     } else {
                         navController.popBackStack()
                     }
                 }
             }
 
-            if (showInfo.value) {
+            /*if (showInfo.value) {
+                InfoView(controller, uriRemoveImage.value, showInfo)
+            }*/
+            AnimatedVisibility(
+                visible = showInfo.value,
+                enter = slideInFromTop(),
+                exit = slideOutFromTop()
+            ) {
                 InfoView(controller, uriRemoveImage.value, showInfo)
             }
         }
@@ -182,7 +220,8 @@ fun BottomView(
     uri: Uri, navController: NavController,
     showInfo: MutableState<Boolean>,
     isDeleteDialogOpen: MutableState<Boolean>,
-    onImageRemoved: (Uri) -> Unit) {
+    onImageRemoved: (Uri) -> Unit
+) {
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(30.dp))
@@ -195,7 +234,8 @@ fun BottomView(
     ) {
         IconButton(
             onClick = {
-                navController.navigate("editPhoto/${Uri.encode(uri.toString())}") },
+                navController.navigate("editPhoto/${Uri.encode(uri.toString())}")
+            },
             modifier = Modifier.size(38.dp),
             colors = IconButtonDefaults.iconButtonColors(
                 contentColor = MaterialTheme.colorScheme.secondary
@@ -210,17 +250,18 @@ fun BottomView(
 
         IconButton(
             onClick = {
-                if(showInfo.value) {
+                if (showInfo.value) {
                     showInfo.value = false
                 } else {
                     showInfo.value = true
-                }},
+                }
+            },
             modifier = Modifier.size(38.dp),
             colors = IconButtonDefaults.iconButtonColors(
                 contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            if(!showInfo.value) {
+            if (!showInfo.value) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = "Info Button",
@@ -260,7 +301,7 @@ fun BottomView(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val finishDelete = controller.deleteImage(uri)
+                        val finishDelete = controller.deletePhoto(uri)
                         if (finishDelete) {
                             Log.d("ImageDetailView", "Finished delete uri: $uri")
                             onImageRemoved(uri)
@@ -297,11 +338,17 @@ fun InfoView(controller: GalleryController, uri: Uri, showInfo: MutableState<Boo
         ) {
             Column {
                 Text(text = "URI: ${it.imageUri}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Capture Date: ${it.captureDate}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Image Size: ${it.imageSize} bytes", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Capture Date: ${it.captureDate}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Image Size: ${it.imageSize} bytes",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 IconButton(
-                    onClick = {showInfo.value = false},
+                    onClick = { showInfo.value = false },
                     modifier = Modifier
                         .size(38.dp)
                         .align(Alignment.End),

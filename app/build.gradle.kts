@@ -63,17 +63,15 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-
     // Coil for image loading
     implementation(libs.coil.compose)
-
     // Navigation for Jetpack Compose
     implementation(libs.androidx.navigation.compose)
-
     implementation(libs.material.icons.extended)
     implementation(libs.foundation)
     implementation(libs.gson)
-
     implementation(libs.exifinterface)
 
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.accompanist.navigation.animation)
 }

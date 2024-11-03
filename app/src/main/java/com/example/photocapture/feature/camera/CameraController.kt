@@ -23,7 +23,7 @@ class CameraController (private val context: Context) {
     private var preview: Preview? = null
     private val photosList = mutableListOf<Photo>()
 
-
+    // Khởi tạo CameraController
     fun startCamera(previewView: PreviewView) {
         cameraProvider?.unbindAll()
 
@@ -53,10 +53,12 @@ class CameraController (private val context: Context) {
         }
     }
 
+    // Dừng camera
     fun stopCamera() {
         cameraProvider?.unbindAll()
     }
 
+    // Xoay camera
     fun switchCamera(previewView: PreviewView) {
         stopCamera()
         Log.d("CameraController", "Switch Camera Called")
@@ -69,6 +71,7 @@ class CameraController (private val context: Context) {
         startCamera(previewView)
     }
 
+    // Tạo đường dẫn lưu ảnh
     private fun createFile(): File? {
         val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         outputDir?.let {
@@ -80,6 +83,7 @@ class CameraController (private val context: Context) {
         return null
     }
 
+    // Chụp ảnh
     fun capturePhoto(onImageSaved: (Uri) -> Unit) {
         val photoFile = createFile() ?: return
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -106,6 +110,7 @@ class CameraController (private val context: Context) {
         )
     }
 
+    // Lưu danh sách ảnh vào bộ nhớ
     private fun savePhotosListToStorage() {
         // Đọc danh sách ảnh hiện có từ file
         val existingPhotos = readPhotosListFromStorage().toMutableList()
@@ -121,7 +126,7 @@ class CameraController (private val context: Context) {
         file.writeText(json) // Ghi lại danh sách mới vào file
     }
 
-
+    // Đọc danh sách ảnh từ bộ nhớ
     private fun readPhotosListFromStorage(): List<Photo> {
         val outputDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         val file = File(outputDir, "photos_list.json")
@@ -136,7 +141,8 @@ class CameraController (private val context: Context) {
         }
     }
 
-    fun getLastImageUri(): Uri? {
+    // Lấy URI của ảnh cuối cùng
+    fun getLastPhotoUri(): Uri? {
         val photosFromStorage = readPhotosListFromStorage()
         return if (photosFromStorage.isNotEmpty()) {
             // Lấy URI của ảnh cuối cùng và ghi log

@@ -98,11 +98,10 @@ class EditController(private val context: Context) {
         }
     }
 
-    // Hàm lưu ảnh chỉnh sửa lại vào URI cũ
+    // Lưu ảnh chỉnh sửa lại vào URI cũ
     fun saveEditedPhoto(bitmap: Bitmap, uri: Uri): Boolean {
         return try {
             context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                // Lưu ảnh dưới dạng JPEG, có thể điều chỉnh chất lượng nếu cần
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 outputStream.flush()
             }
